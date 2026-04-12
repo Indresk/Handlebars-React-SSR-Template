@@ -1,0 +1,11 @@
+{{#each components}}
+	{{!-- <div
+		id='component-{{@index}}'
+		data-component='{{this.name}}'
+		data-props-id='props-{{@index}}'
+	></div> --}}
+
+	<script id='props-{{this.id}}' type='application/json'>
+		{{{json this.props}}}
+	</script>
+{{/each}}

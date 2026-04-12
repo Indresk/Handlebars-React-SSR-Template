@@ -1,0 +1,54 @@
+@use 'variables' as *;
+
+// Header
+
+header {
+	anchor-name: --main-header;
+	background-color: $accent-color;
+	> h1 {
+		color: $background-color;
+	}
+}
+nav {
+	position: fixed;
+	position-anchor: --main-header;
+	top: anchor(bottom);
+	right: anchor(right);
+	background-color: $accent-color;
+	& li {
+		list-style: none;
+		> a {
+			text-decoration: none;
+			color: $inverted-text-color;
+		}
+	}
+}
+
+// Footer
+
+footer {
+	text-align: center;
+	border-top: $border-color solid 2px;
+	position: relative;
+	&::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background-color: $accent-color;
+		opacity: 0.3;
+		z-index: -1;
+	}
+}
+
+// Cards
+
+.card {
+	border: $border-color solid 2px;
+	border-radius: $general-radius;
+	box-shadow: 4px 4px 0px $accent-color;
+}
+
+#cards-container {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+}
