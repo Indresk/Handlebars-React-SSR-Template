@@ -55,6 +55,7 @@ This is a template for a server-side rendering (SSR) that combines Express.js wi
 ### Prerequisites
 
 - Node.js (v16 or higher)
+- SASS (v1.9 or higher)
 - npm or yarn
 
 ### Installation
