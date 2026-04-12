@@ -1,6 +1,6 @@
 # Handlebars + React SSR Template
 
-A server-side rendering (SSR) template that combines Express.js with Handlebars for server-side templating and React for interactive client-side components. This setup allows for efficient rendering of pages on the server while enabling React components to hydrate on the client for dynamic behavior.
+This is a template for a server-side rendering (SSR) that combines Express.js with Handlebars for server-side templating and React for interactive client-side components. Currently allows hydrated and root rendered island components. All contributions are welcome.
 
 ## Features
 
@@ -164,6 +164,11 @@ Add new routes in `src/routes/views.routes.js` as express endpoints.
 - `npm run start` - Start production server
 - `npm run dev:css` - Watch and compile SASS in development mode
 - `npm run build:css` - Compile and compress SASS for production
+
+## Working on:
+- Simplify the react handlebars interaction
+- Implement sessions with express-session
+- Fix the spacing rendering issue on handlebars to allow easily hydratation
 
 ## Contributing
 
