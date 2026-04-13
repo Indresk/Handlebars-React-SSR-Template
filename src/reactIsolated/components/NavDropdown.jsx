@@ -5,7 +5,7 @@ const NavDropdown = ({ data }) => {
 	return (
 		<>
 			<nav className={dropdown ? '' : 'hide'}>
-				<ul className='flex fd-c'>
+				<ul className='flex fd-c px-4 py-2 g-1'>
 					{data.map((item, index) => (
 						<li key={index}>
 							<a href={item.link}>{item.name}</a>
@@ -13,10 +13,9 @@ const NavDropdown = ({ data }) => {
 					))}
 				</ul>
 			</nav>
-			<div
-				className='tinvert icon'
-				onClick={() => setDropDown((prev) => !prev)}>
+			<div className='icon' onClick={() => setDropDown((prev) => !prev)}>
 				<svg
+					className={dropdown ? 'active' : 'inactive'}
 					xmlns='http://www.w3.org/2000/svg'
 					viewBox='0 0 24 24'
 					fill='currentColor'

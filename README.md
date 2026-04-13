@@ -116,14 +116,16 @@ npm start
 2. Add it to the component map in `src/reactIsolated/componentMap.js`:
 
 ```javascript
-import YourComponent from './components/YourComponent.jsx';
-
-export default [
+[
 	// ... existing components
 	{
 		id: 'your-component',
-		component: () => import('./components/YourComponent.jsx'),
+		component: () =>
+			import(
+				/* webpackChunkName: "your-component" */ './components/YourComponent.jsx'
+			),
 		hydrate: true, // Set to true for client-side hydration
+		pages: ['global'],
 	},
 ];
 ```
@@ -134,17 +136,25 @@ export default [
 <div id='your-component'></div>
 ```
 
-4. For better organization, only hydrated components use props. If your component needs props, add them with the `props` key in `componentMap.js`:
+4. Props for components on root and to be hydrated state can be modified in `componentMap.js`, per each component is necessary set the pages will be rendered, if you want to render it on all pages set `pages: ['global']`:
 
 ```javascript
-{
-    id: 'your-component',
-    component: () => import(/* webpackChunkName: "your-component" */ './components/YourComponent.jsx'),
-    hydrate: true,
-    props: {
-        title: 'Hello World',
-    },
-},
+[
+	// ... existing components
+	{
+		id: 'your-component',
+		component: () =>
+			import(
+				/* webpackChunkName: "your-component" */ './components/YourComponent.jsx'
+			),
+		hydrate: true,
+		pages: ['global'],
+		props: {
+			// Props only has been taken to be passed to the component if this key value exist. This object can be an empty object as the global nav example. The ideal es before the rendering process all necessary data for each component and send it to handlebars component render in options object.
+			title: 'Hello World',
+		},
+	},
+];
 ```
 
 ### Styling
@@ -167,17 +177,14 @@ Add new routes in `src/routes/views.routes.js` as express endpoints.
 - `npm run build:css` - Compile and compress SASS for production
 
 ## Working on:
+
 - Simplify the react handlebars interaction
 - Implement sessions with express-session
 - Fix the spacing rendering issue on handlebars to allow easily hydratation
 
 ## Contributing
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
+Contributions are welcome! Please feel free to submit a pull request or open an issue if you have any suggestions or improvements.
 
 ## License
 

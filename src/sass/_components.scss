@@ -1,28 +1,5 @@
 @use 'variables' as *;
-
-// Header
-
-header {
-	anchor-name: --main-header;
-	background-color: $accent-color;
-	> h1 {
-		color: $background-color;
-	}
-}
-nav {
-	position: fixed;
-	position-anchor: --main-header;
-	top: anchor(bottom);
-	right: anchor(right);
-	background-color: $accent-color;
-	& li {
-		list-style: none;
-		> a {
-			text-decoration: none;
-			color: $inverted-text-color;
-		}
-	}
-}
+@use 'header';
 
 // Footer
 
