@@ -1,16 +1,31 @@
 import express from 'express';
 import componentMap from '../reactIsolated/componentMap.js';
+import {
+	requireAuth,
+	requireGuest,
+	sessionState,
+} from '../middlewares/auth.js';
 
 const viewsRoutes = express.Router();
 
+// Global Nav links
 const globalObject = {
 	styles: '/css/styles.css',
 	navLinks: [
 		{ link: '/', name: 'home' },
-		{ link: '/test1', name: 'test1' },
-		{ link: '/test2', name: 'test2' },
+		{ link: '/protected', name: 'protected' },
+		{ link: '/login', name: 'login' },
 	],
 };
+
+// Set global info for handlebars
+
+viewsRoutes.use((req, res, next) => {
+	res.locals.globalInfo = globalObject;
+	next();
+});
+
+// Get props to render for react components
 
 const components = componentMap.filter((e) => e.props);
 const componentsDataGlobal = components.map((e) => {
@@ -18,42 +33,64 @@ const componentsDataGlobal = components.map((e) => {
 	return { ...e };
 });
 
-viewsRoutes.get('/', (req, res) => {
-	const componentesFiltered = componentsDataGlobal.filter(
-		(e) => e.pages.includes('/') || e.pages.includes('global'),
+function renderWithReact(res, viewName, pagePath, options = {}) {
+	const components = componentsDataGlobal.filter(
+		(e) => e.pages.includes(pagePath) || e.pages.includes('global'),
 	);
-	res.render('index', {
+
+	return res.render(viewName, {
+		components,
+		...options,
+	});
+}
+
+// Set global session state
+
+viewsRoutes.use(sessionState);
+
+// Views
+
+viewsRoutes.get('/', (req, res) => {
+	renderWithReact(res, 'index', '/', {
 		metaInfo: {
 			title: 'Home',
 		},
-		globalInfo: globalObject,
-		components: componentesFiltered,
 	});
 });
 
 viewsRoutes.get('/test1', (req, res) => {
-	const componentesFiltered = componentsDataGlobal.filter(
-		(e) => e.pages.includes('/test1') || e.pages.includes('global'),
-	);
-	res.render('test1', {
+	renderWithReact(res, 'test1', '/test1', {
 		metaInfo: {
 			title: 'Test01',
 		},
-		globalInfo: globalObject,
-		components: componentesFiltered,
 	});
 });
 
 viewsRoutes.get('/test2', (req, res) => {
-	const componentesFiltered = componentsDataGlobal.filter(
-		(e) => e.pages.includes('/test2') || e.pages.includes('global'),
-	);
-	res.render('test2', {
+	renderWithReact(res, 'test2', '/test2', {
 		metaInfo: {
 			title: 'Test02',
 		},
-		globalInfo: globalObject,
-		components: componentesFiltered,
+	});
+});
+
+// Login management
+
+viewsRoutes.get('/login', requireGuest, (req, res) => {
+	const { error } = req.query;
+	renderWithReact(res, 'login', '/login', {
+		metaInfo: {
+			title: 'Login',
+		},
+		error: error,
+	});
+});
+
+viewsRoutes.get('/protected', requireAuth, (req, res) => {
+	renderWithReact(res, 'protected', '/protected', {
+		metaInfo: {
+			title: 'ProtectedRoute',
+		},
 	});
 });
 

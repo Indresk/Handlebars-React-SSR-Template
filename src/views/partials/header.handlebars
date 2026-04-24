@@ -17,5 +17,6 @@
 			stroke='currentColor'><path d='M4 5h16' /><path d='M4 12h16' /><path d='M4 19h16' /></svg
 		></div>
 	</div>
+	{{#if isAuthenticated}}<form action="/auth/logout" method="post"><button class="secondary" type="submit">LogOut</button></form>{{/if}}
 </header>
 {{!-- {{/cleanToHydrate}} --}}

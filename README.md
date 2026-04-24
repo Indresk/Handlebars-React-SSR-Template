@@ -8,6 +8,7 @@ This is a template for a server-side rendering (SSR) that combines Express.js wi
 - **React Integration**: React components can be embedded within Handlebars views and hydrated on the client for interactivity.
 - **Webpack Bundling**: React components are bundled using Webpack for optimized delivery.
 - **SASS Styling**: Modular SCSS architecture for maintainable stylesheets.
+- **Authentication & Sessions**: Secure user authentication with session management using express-session and file-based storage.
 - **Development Tools**: Hot reloading for CSS, JS, and server changes during development.
 - **Modular Architecture**: Organized structure for views, components, routes, and utilities.
 
@@ -18,28 +19,38 @@ This is a template for a server-side rendering (SSR) that combines Express.js wi
 - **Frontend**: React 19, React DOM
 - **Build Tools**: Webpack 5, Babel
 - **Styling**: SASS/SCSS
+- **Authentication**: express-session, session-file-store, argon2
 - **Development**: Concurrently, Nodemon-like watching
 
 ## Project Structure
 
 ```
 ├── src/
+│   ├── middlewares/            # Express middleware
+│   │   └── auth.js             # Authentication middleware
 │   ├── reactIsolated/          # React components and hydration logic
-│   │   ├── componentMap.js     # Maps React components to DOM elements
+│   │   ├── componentMap.js     # Maps React components to DOM elements with page-specific rendering
 │   │   ├── index.jsx           # Client-side hydration entry point
 │   │   └── components/         # Individual React components
 │   ├── routes/                 # Express routes
-│   │   └── views.routes.js     # View routes with component data
+│   │   ├── api.routes.js       # API routes
+│   │   ├── auth.routes.js      # Authentication routes (login/logout)
+│   │   └── views.routes.js     # View routes with component data and pre-render validations
 │   ├── sass/                   # SCSS stylesheets
 │   │   ├── index.scss          # Main stylesheet entry
 │   │   └── [partials]/         # Modular style components
 │   ├── util/                   # Utility functions
 │   │   ├── dirname.js          # Directory utilities
-│   │   └── handlebarsExtraConfig.js # Handlebars helpers
+│   │   ├── handlebarsExtraConfig.js # Handlebars helpers
+│   │   └── sessionConfig.js    # Session configuration
 │   └── views/                  # Handlebars templates
 │       ├── index.handlebars    # Main page template
+│       ├── login.handlebars    # Login page template
+│       ├── protected.handlebars # Protected page template
 │       ├── layouts/            # Layout templates
 │       └── partials/           # Reusable template parts
+├── localData/                  # Local data storage
+│   └── sessions/               # Session files
 ├── public/                     # Static assets
 │   ├── assets/                 # Images, fonts, etc.
 │   ├── css/                    # Compiled CSS
@@ -74,6 +85,7 @@ Create a `.env` file in the root directory with the following variables:
 
 ```
 PORT=10100
+SECRET_SESSION=your-secret-key-here
 ```
 
 ### Development
@@ -110,6 +122,17 @@ npm start
 
 ## Usage
 
+### Authentication
+
+The application includes built-in authentication with session management:
+
+- **Login**: POST to `/auth/login` with `email` and `password` fields
+- **Logout**: POST to `/auth/logout`
+- **Protected Routes**: Use `requireAuth` middleware to protect routes
+- **Session State**: Available in templates via `isAuthenticated` and `sessionUser` locals
+
+Default test credentials: `test@example.com` / `asdasd`
+
 ### Adding React Components
 
 1. Create your React component in `src/reactIsolated/components/`
@@ -125,7 +148,8 @@ npm start
 				/* webpackChunkName: "your-component" */ './components/YourComponent.jsx'
 			),
 		hydrate: true, // Set to true for client-side hydration
-		pages: ['global'],
+		pages: ['/'], // Specify which pages this component should render on, or ['global'] for all pages
+		props: {}, // Optional props to pass to the component
 	},
 ];
 ```
@@ -136,36 +160,7 @@ npm start
 <div id='your-component'></div>
 ```
 
-4. Props for components on root and to be hydrated state can be modified in `componentMap.js`, per each component is necessary set the pages will be rendered, if you want to render it on all pages set `pages: ['global']`:
-
-```javascript
-[
-	// ... existing components
-	{
-		id: 'your-component',
-		component: () =>
-			import(
-				/* webpackChunkName: "your-component" */ './components/YourComponent.jsx'
-			),
-		hydrate: true,
-		pages: ['global'],
-		props: {
-			// Props only has been taken to be passed to the component if this key value exist. This object can be an empty object as the global nav example. The ideal es before the rendering process all necessary data for each component and send it to handlebars component render in options object.
-			title: 'Hello World',
-		},
-	},
-];
-```
-
-### Styling
-
-Add styles in the `src/sass/` directory. The main entry point is `index.scss`, which forwards variables and mixins and uses partials.
-
-### Routes
-
-Add new routes in `src/routes/views.routes.js` as express endpoints.
-`globalObject` will set the primary navigation links and styles for the entire site.
-`metaInfo`, `globalInfo` and `components` keys in render options for handlebars are required as used in the main layout, but you can add as many as you want and use them in your templates.
+The system now includes pre-render validations that automatically filter and render only the components specified for each view, improving performance and organization.
 
 ## Scripts
 
@@ -178,9 +173,9 @@ Add new routes in `src/routes/views.routes.js` as express endpoints.
 
 ## Working on:
 
-- Simplify the react handlebars interaction
-- Implement sessions with express-session
 - Fix the spacing rendering issue on handlebars to allow easily hydratation
+- Implement database integration for user management
+- Add more authentication features (registration, password reset)
 
 ## Contributing
 
