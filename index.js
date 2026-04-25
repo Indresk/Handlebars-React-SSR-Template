@@ -3,16 +3,18 @@ import express from 'express';
 import handlebars from 'express-handlebars';
 import __dirname from './src/util/dirname.js';
 import viewsRoutes from './src/routes/views.routes.js';
-import handlebarsHelpers from './src/util/handlebarsExtraConfig.js';
+import handlebarsHelpers from './src/config/handlebarsHelpers.js';
 import session from 'express-session';
-import { sessionConfig } from './src/util/sessionConfig.js';
+import { sessionConfig } from './src/config/sessionConfig.js';
 import apiRoutes from './src/routes/api.routes.js';
 import authRoutes from './src/routes/auth.routes.js';
+import eraseSessions from './src/util/eraseSessions.js';
 
 dotenv.config();
 
 const PORT = process.env.PORT;
 const SECRET = process.env.SECRET_SESSION;
+eraseSessions();
 
 const sessionConfigOpt = sessionConfig(session, __dirname, SECRET);
 

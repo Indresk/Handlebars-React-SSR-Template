@@ -7,7 +7,7 @@ export default (env, argv) => {
 
 	return {
 		mode: isProd ? 'production' : 'development',
-		entry: './src/reactIsolated/index.jsx',
+		entry: './src/react/index.jsx',
 		output: {
 			path: path.resolve(__dirname, 'public/js'),
 			filename: '[name].bundle.js',

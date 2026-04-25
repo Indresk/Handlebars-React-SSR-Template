@@ -1,16 +1,16 @@
 # Handlebars + React SSR Template
 
-This is a template for a server-side rendering (SSR) that combines Express.js with Handlebars for server-side templating and React for interactive client-side components. Currently allows hydrated and root rendered island components. All contributions are welcome.
+This is a template for server-side rendering (SSR) that combines Express.js with Handlebars templates and React for interactive client-side components. The project uses Webpack to bundle React, SASS for styling, and express-session for session-based authentication.
 
 ## Features
 
-- **Server-Side Rendering (SSR)**: Pages are rendered on the server using Handlebars templates for fast initial load times.
-- **React Integration**: React components can be embedded within Handlebars views and hydrated on the client for interactivity.
-- **Webpack Bundling**: React components are bundled using Webpack for optimized delivery.
-- **SASS Styling**: Modular SCSS architecture for maintainable stylesheets.
-- **Authentication & Sessions**: Secure user authentication with session management using express-session and file-based storage.
-- **Development Tools**: Hot reloading for CSS, JS, and server changes during development.
-- **Modular Architecture**: Organized structure for views, components, routes, and utilities.
+- **Server-Side Rendering (SSR)**: Pages are rendered on the server using Handlebars templates for faster first paint.
+- **React Integration**: React components are loaded and optionally hydrated in the browser from Handlebars views.
+- **Webpack Bundling**: React entry points and dynamic imports are bundled with Webpack 5.
+- **SASS Styling**: Modular SCSS files compile into a single CSS output.
+- **Authentication & Sessions**: Session-based authentication with protected routes and login/logout flow.
+- **Development Tools**: Watch mode for JavaScript, CSS, and server changes in development.
+- **Modular Architecture**: Clean separation of routes, views, components, middleware, and utilities.
 
 ## Technologies Used
 
@@ -19,46 +19,53 @@ This is a template for a server-side rendering (SSR) that combines Express.js wi
 - **Frontend**: React 19, React DOM
 - **Build Tools**: Webpack 5, Babel
 - **Styling**: SASS/SCSS
-- **Authentication**: express-session, session-file-store, argon2
-- **Development**: Concurrently, Nodemon-like watching
+- **Authentication**: `express-session`, `session-file-store`
+- **Development**: `concurrently`, Node.js watch mode
 
 ## Project Structure
 
 ```
 ├── src/
+│   ├── config/                 # Config helpers and session configuration
+│   │   ├── handlebarsHelpers.js
+│   │   └── sessionConfig.js
 │   ├── middlewares/            # Express middleware
-│   │   └── auth.js             # Authentication middleware
-│   ├── reactIsolated/          # React components and hydration logic
-│   │   ├── componentMap.js     # Maps React components to DOM elements with page-specific rendering
-│   │   ├── index.jsx           # Client-side hydration entry point
-│   │   └── components/         # Individual React components
+│   │   └── auth.js
+│   ├── react/                  # React entrypoint, component map, and components
+│   │   ├── componentMap.js
+│   │   ├── index.jsx
+│   │   └── components/
+│   │       ├── App.jsx
+│   │       ├── NavDropdown.jsx
+│   │       └── Test2.jsx
 │   ├── routes/                 # Express routes
-│   │   ├── api.routes.js       # API routes
-│   │   ├── auth.routes.js      # Authentication routes (login/logout)
-│   │   └── views.routes.js     # View routes with component data and pre-render validations
+│   │   ├── api.routes.js
+│   │   ├── auth.routes.js
+│   │   └── views.routes.js
 │   ├── sass/                   # SCSS stylesheets
-│   │   ├── index.scss          # Main stylesheet entry
-│   │   └── [partials]/         # Modular style components
+│   │   ├── index.scss
+│   │   └── [partials].scss
 │   ├── util/                   # Utility functions
-│   │   ├── dirname.js          # Directory utilities
-│   │   ├── handlebarsExtraConfig.js # Handlebars helpers
-│   │   └── sessionConfig.js    # Session configuration
+│   │   ├── dirname.js
+│   │   └── eraseSessions.js
 │   └── views/                  # Handlebars templates
-│       ├── index.handlebars    # Main page template
-│       ├── login.handlebars    # Login page template
-│       ├── protected.handlebars # Protected page template
-│       ├── layouts/            # Layout templates
-│       └── partials/           # Reusable template parts
+│       ├── index.handlebars
+│       ├── login.handlebars
+│       ├── protected.handlebars
+│       ├── test1.handlebars
+│       ├── test2.handlebars
+│       ├── layouts/
+│       └── partials/
 ├── localData/                  # Local data storage
 │   └── sessions/               # Session files
-├── public/                     # Static assets
-│   ├── assets/                 # Images, fonts, etc.
-│   ├── css/                    # Compiled CSS
-│   └── js/                     # Bundled JavaScript
-├── babel.config.js             # Babel configuration
-├── webpack.config.js           # Webpack configuration
-├── package.json                # Dependencies and scripts
-└── index.js                    # Server entry point
+├── public/                     # Static assets output
+│   ├── assets/
+│   ├── css/
+│   └── js/
+├── babel.config.js
+├── webpack.config.js
+├── package.json
+└── index.js
 ```
 
 ## Getting Started
@@ -98,8 +105,8 @@ npm run dev
 
 This command runs:
 
-- Webpack in watch mode for React components
-- Express server with file watching
+- Webpack in watch mode for React bundles
+- Node.js server in watch mode
 - SASS compiler in watch mode
 
 The application will be available at `http://localhost:10100`
@@ -124,7 +131,7 @@ npm start
 
 ### Authentication
 
-The application includes built-in authentication with session management:
+The template includes a basic login flow with session management:
 
 - **Login**: POST to `/auth/login` with `email` and `password` fields
 - **Logout**: POST to `/auth/logout`
@@ -133,34 +140,25 @@ The application includes built-in authentication with session management:
 
 Default test credentials: `test@example.com` / `asdasd`
 
-### Adding React Components
+### React Component Integration
 
-1. Create your React component in `src/reactIsolated/components/`
-2. Add it to the component map in `src/reactIsolated/componentMap.js`:
+1. Create a React component under `src/react/components/`.
+2. Register it in `src/react/componentMap.js`.
+3. Include a matching `<div id="your-component"></div>` in a Handlebars template.
 
-```javascript
-[
-	// ... existing components
-	{
-		id: 'your-component',
-		component: () =>
-			import(
-				/* webpackChunkName: "your-component" */ './components/YourComponent.jsx'
-			),
-		hydrate: true, // Set to true for client-side hydration
-		pages: ['/'], // Specify which pages this component should render on, or ['global'] for all pages
-		props: {}, // Optional props to pass to the component
-	},
-];
+Example mapping:
+
+```js
+{
+  id: 'your-component',
+  component: () => import(/* webpackChunkName: "your-component" */ './components/YourComponent.jsx'),
+  hydrate: true,
+  pages: ['/'],
+  props: {},
+}
 ```
 
-3. Include the component in your Handlebars template:
-
-```handlebars
-<div id='your-component'></div>
-```
-
-The system now includes pre-render validations that automatically filter and render only the components specified for each view, improving performance and organization.
+The runtime loads only the components mapped for the current page and hydrates them when `hydrate: true`.
 
 ## Scripts
 

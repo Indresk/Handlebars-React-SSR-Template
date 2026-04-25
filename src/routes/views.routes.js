@@ -1,5 +1,5 @@
 import express from 'express';
-import componentMap from '../reactIsolated/componentMap.js';
+import componentMap from '../react/componentMap.js';
 import {
 	requireAuth,
 	requireGuest,
